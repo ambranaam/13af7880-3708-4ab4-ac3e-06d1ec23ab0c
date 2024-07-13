@@ -40,6 +40,12 @@ ProcessMillingFunction(fileContent)
 import sys
 import re
 
+gcode_pause = "M00"
+gcode_led_green_on = "M03"
+gcode_led_green_off = "M04"
+gcode_led_red_on = "M08"
+gcode_led_red_off = "M09"
+
 #--------------------------------------------
 def main(argv):
 
@@ -56,8 +62,9 @@ def main(argv):
     valid_gcode = False
     PositionFlag = "High" # Assume starting position is High
 
-    new_gcode_list = ["M04"]
-    new_gcode_list.append ("M09")
+    new_gcode_list = []
+    new_gcode_list.append (gcode_led_green_off)
+    new_gcode_list.append (gcode_led_red_off)
     for line in gcode.splitlines():
 
         # Check for G00 lines; if none are found we assume the infile is not a valid gcode file
@@ -70,17 +77,17 @@ def main(argv):
 
         # Check for G00 lines with Z followed by a number >= 1
         if line.startswith('G00') and re.search("Z([1-9]\d*)", line) and PositionFlag == "Low" :
-            new_gcode_list.append ("M08")
-            new_gcode_list.append ("M00")
-            new_gcode_list.append ("M09")
+            new_gcode_list.append (gcode_led_red_on)
+            new_gcode_list.append (gcode_pause)
+            new_gcode_list.append (gcode_led_red_off)
             PositionFlag = "High"
             continue
 
         # Check for G0 lines containing "Z-" when PositionFlag is High
         if line.startswith('G0') and re.search("Z-", line) and PositionFlag == "High" :
-            new_gcode_list.append ("M03")
-            new_gcode_list.append ("M00")
-            new_gcode_list.append ("M04")
+            new_gcode_list.append (gcode_led_green_on)
+            new_gcode_list.append (gcode_pause)
+            new_gcode_list.append (gcode_led_green_off)
             PositionFlag = "Low"
             continue
 
