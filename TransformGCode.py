@@ -41,8 +41,8 @@ import sys
 import re
 
 gcode_pause = "M00"
-gcode_led_green_on = "M03"
-gcode_led_green_off = "M04"
+gcode_led_green_on = "M04"
+gcode_led_green_off = "M03"
 gcode_led_red_on = "M08"
 gcode_led_red_off = "M09"
 
@@ -81,7 +81,6 @@ def main(argv):
             new_gcode_list.append (gcode_pause)
             new_gcode_list.append (gcode_led_red_off)
             PositionFlag = "High"
-            continue
 
         # Check for G0 lines containing "Z-" when PositionFlag is High
         if line.startswith('G0') and re.search("Z-", line) and PositionFlag == "High" :
@@ -89,7 +88,6 @@ def main(argv):
             new_gcode_list.append (gcode_pause)
             new_gcode_list.append (gcode_led_green_off)
             PositionFlag = "Low"
-            continue
 
         # Add the current line after any inserted lines
         new_gcode_list.append (line)
